@@ -23,13 +23,36 @@ Background: movies have been added to database
   
 Scenario: restrict to movies with 'PG' or 'R' ratings
   # enter step(s) to check the 'PG' and 'R' checkboxes
+  #When I check "ratings[PG]"
+  #And I check "ratings[R]"
+  When I check the following ratings: PG, R
   # enter step(s) to uncheck all other checkboxes
+  #And I uncheck "ratings[G]"
+  #And I uncheck "ratings[PG-13]"
+  #And I uncheck "ratings[NC-17]"
+  And I uncheck the following ratings: G, PG-13, NC-17
   # enter step to "submit" the search form on the homepage
+  And I press "Refresh"
   # enter step(s) to ensure that PG and R movies are visible
+  Then I should be on the RottenPotatoes home page
+  And I should see /(PG)+/
+  And I should see /(R)+/
   # enter step(s) to ensure that other movies are not visible
+  And I should not see /(PG-13){2,}/
+  And I should not see /(G){2,}/
+  And I should not see /(NC-17){2,}/
 
 Scenario: no ratings selected
   # see assignment
+  When I uncheck the following ratings: PG, R, G, PG-13, NC-17
+  And I press "Refresh"
+  Then I should be on the RottenPotatoes home page
+  And I should see 0 of the movies
 
 Scenario: all ratings selected
   # see assignment
+  When I check the following ratings: PG, R, G, PG-13, NC-17
+  And I press "Refresh"
+  Then I should be on the RottenPotatoes home page
+  And I should see 10 of the movies
+  
